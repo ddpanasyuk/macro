@@ -1,13 +1,12 @@
 #include "parse.h"
 #include "string.h"
 
+#define LIST_APPEND(X) X->next=malloc(sizeof(struct token));X->next->prev=X;X=X->next
+
 struct token* tokenize(char* src){
 	//make head token
 	struct token* list = malloc(sizeof(struct token));
-	struct token* head = list;
-	head->type = TYPE_HEAD;
-	head->dat = "";
-	head->prev = TYPE_NULL;
+	struct token* curr = list;
 	struct token* temp;
 
 	//read from src
@@ -30,22 +29,17 @@ struct token* tokenize(char* src){
 			}
 			buff[i]='\0';
 			//make new token and add to end of list
-			temp = malloc(sizeof(struct token));
-			temp->type = TYPE_STRING;
-			temp->dat = strdup(buff);
-			list->next = temp;
-			temp->prev = list;
-			list = temp;
+			curr->type = TYPE_STRING;
+			curr->dat = strdup(buff);
+			LIST_APPEND(curr);
 			continue;
 		}
 		//iterate read if nothing found
 		read++;
 	}
 	//add end to list
-	temp = malloc(sizeof(struct token));
-	temp->type = TYPE_NULL;
-	temp->prev = list;
-	list->next = temp;
-	temp->next = TYPE_NULL;
-	return head;
+	curr->type = TYPE_NULL;
+	curr->next = TYPE_NULL;
+	curr->dat = TYPE_NULL;
+	return list;
 }
